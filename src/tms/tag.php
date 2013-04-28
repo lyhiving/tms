@@ -94,10 +94,13 @@ if (!function_exists('_tms_syntax')) {
 			_tms_error('Invalid argument in call to <b>{function}()</b> ');
 		}
 
-		// 检查参数是否缺少字段
+		// 检查参数是否缺少字段，或字段值错误
 		foreach ($keys as $v) {
 			if (!isset($args[$v])) {
 				_tms_error('Undefined index: <b>' . $v . '</b> ');
+			}
+			if (empty($args[$v])) {
+				_tms_error('Invalid value of index <b>' . $v . '</b> ');
 			}
 		}
 
