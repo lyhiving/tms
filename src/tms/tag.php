@@ -96,11 +96,8 @@ if (!function_exists('_tms_syntax')) {
 
 		// 检查参数是否缺少字段，或字段值错误
 		foreach ($keys as $v) {
-			if (!isset($args[$v])) {
-				_tms_error('Undefined index: <b>' . $v . '</b> ');
-			}
 			if (empty($args[$v])) {
-				_tms_error('Invalid value of index <b>' . $v . '</b> ');
+				_tms_error('Undefined index: <b>' . $v . '</b> ');
 			}
 		}
 
