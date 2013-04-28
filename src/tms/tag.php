@@ -109,26 +109,6 @@ if (!function_exists('_tms_syntax')) {
 }
 
 /**
- * 标签输入输出控制器
- * @param string $filename
- * @param string $io
- * @return void
- */
-if (!function_exists('_tms_io')) {
-
-	function _tms_io ($filename, $io) {
-
-		$data = @file_get_contents($filename);
-		$data = _tms_encode($data);
-		$data = json_decode($data, true);
-		$data = $data ? $data : array();
-		$GLOBALS['_tms_' . $io] = array_merge($GLOBALS['_tms_' . $io], $data);
-
-	}
-
-}
-
-/**
  * 将 JSON 字符串转换为可读格式
  * @param string $json
  * @return string
@@ -149,7 +129,9 @@ if (!function_exists('_tms_format')) {
 			$char = substr($json, $i, 1);
 			if ($char == '"' && $prevChar != '\\') {
 				$outOfQuotes = !$outOfQuotes;
-			} else if (($char == '}' || $char == ']') && $outOfQuotes) {
+			} elseif ($char == ':') {
+				$char .= ' ';
+			} elseif (($char == '}' || $char == ']') && $outOfQuotes) {
 				$result .= $newLine;
 				$pos--;
 				for ($j = 0; $j < $pos; $j++) {
@@ -169,6 +151,26 @@ if (!function_exists('_tms_format')) {
 			$prevChar = $char;
 		}
 		return $result;
+	}
+
+}
+
+/**
+ * 标签输入输出控制器
+ * @param string $filename
+ * @param string $io
+ * @return void
+ */
+if (!function_exists('_tms_io')) {
+
+	function _tms_io ($filename, $io) {
+
+		$data = @file_get_contents($filename);
+		$data = _tms_encode($data);
+		$data = json_decode($data, true);
+		$data = $data ? $data : array();
+		$GLOBALS['_tms_' . $io] = array_merge($GLOBALS['_tms_' . $io], $data);
+
 	}
 
 }
@@ -211,7 +213,7 @@ if (!function_exists('_tms_export')) {
 		$data = json_encode($GLOBALS['_tms_export'], true);
 		$replace = "iconv('UCS-2', 'UTF-8', pack('H4', '\\1'))";
 		$data = preg_replace('#\\\u([0-9a-f]{4})#ie', $replace, $data);
-		@file_put_contents($filename, $data);
+		@file_put_contents($filename, _tms_format($data));
 		$GLOBALS['_tms_export'] = array();
 
 	}
